@@ -1,0 +1,44 @@
+Team 14 : USN : 1KS17CS028
+              : 1KS17CS039 
+              : 1KS17CS040
+
+
+
+Device A : 192.168.2.5 (packets Drop)
+Device B : 192.168.2.6 (Linux Device, Where iptable is applied)
+Device C : 192.168.2.4 (No packets Drop)
+
+-- CORRESPONDING WIRESHARK CAPTURE IS ATTACHED----
+
+Command: (Device B)
+$sudo iptables -A INPUT -s 192.168.2.5 -p icmp --icmp-type echo-request -m limit --limit 38/minute --limit-burst 14 -j DROP
+
+
+(Device A ) : ping -n 15  192.168.2.6
+
+Output: Pinging 192.168.2.6 with 32 bytes of data:
+Request timed out.
+Request timed out.
+Request timed out.
+Request timed out.
+...
+Request timed out.
+   
+
+Explaination : - from the ping command We are sending 15 ping packets to device b.
+               - from applied iptable command , we are DROPPING request packet from 192.168.2.5 (A), with limit of 38/min,
+                    and burst rate of 14 .
+               - from Wireshark capture 15 packets have been dropped.
+               
+               - later after 30 second ping from device C (192.168.2.4) is accepted and the response is sent, Concluding that
+                 we the drop is only filtering packets according to iptable.
+
+ - since each request has timeout of 4000ms , we have sent 15 icmp packets, which approx takes 60sec. 
+
+Contribution: Since it was experimental assignment ,there was no sepreate contibution. 
+                Everyone in the team tried out different iptable filtering commands like input,output, source and destination filter.
+  
+
+
+
+
